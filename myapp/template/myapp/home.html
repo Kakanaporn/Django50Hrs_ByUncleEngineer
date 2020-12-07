@@ -1,0 +1,88 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+
+    <h3>สินค้าล่าสุด</h3>
+    <p>เรามีสินค้าให้เลือกชมมากมาย</p>
+    <div class="container-fluid">
+        <div class="row">
+            {% for pd in product %}
+                <div class="col-sm-4">
+                    <div class="card" style="width:300px; height: 500; overflow: hidden;">
+
+                        {% if pd.image %}
+                            <img class="card-img-top" src="{{ pd.image.url }}" width="300">
+                        {% elif pd.imageurl != None %}
+                            <img class="card-img-top" src="{{ pd.imageurl }}" width="300">
+                        {% else %}
+                            <img class="card-img-top" src="/media/default-product.png" width="300">
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h1 class="card-title">{{ pd.name }}</h1>
+                            <p>ราคา {{ pd.price }} บาท/{{ pd.unit }}</p>
+                            <p>{{ pd.detail|linebreaks|truncatechars_html:20}}</p>
+                            
+                            {% if pd.quantity > 0 %}
+                                <p>สินค้าในคลังมีจำนวน: {{ pd.quantity }} {{ pd.unit }}</p>
+                            {% else %}
+                                <p><font color='red'> สินค้าอาจจะหมดสต๊อก กรุณาติดต่อเจ้าหน้าที่</font></p>
+                            {% endif %}
+
+                            {% if pd.instock == True %}
+                                <a href="#" class="btn btn-primary" role="button">สั่งซื้อ</a>
+                            {% else %}
+                                <a href="#" class="btn btn-danger" role="button">สินค้าหมด</a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                    <br><br>
+                </div>
+            {% endfor %}
+        </div>
+    </div> 
+
+    <div class="container">
+      <center><a href="{% url 'allproduct-page' %}"><h1>ดูสินค้าทั้งหมด</h1></a></center>
+      <hr>
+    </div>
+
+
+    <h3>สินค้าขายดี (ต้อง pre-order)</h3>
+    <p>pre-order ล่วงหน้า 20 วัน</p>
+    <div class="container-fluid">
+        <div class="row">
+            {% for pd in preorder %}
+                <div class="col-sm-4">
+                    <div class="card" style="width:300px; height: 500; overflow: hidden;">
+
+                        {% if pd.image %}
+                            <img class="card-img-top" src="{{ pd.image.url }}" width="300">
+                        {% elif pd.imageurl != None %}
+                            <img class="card-img-top" src="{{ pd.imageurl }}" width="300">
+                        {% else %}
+                            <img class="card-img-top" src="/media/default-product.png" width="300">
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h1 class="card-title">{{ pd.name }}</h1>
+                            <p>ราคา {{ pd.price }} บาท/{{ pd.unit }}</p>
+                            <p>{{ pd.detail|linebreaks|truncatechars_html:20}}</p>
+                            
+                            {% if pd.quantity > 0 %}
+                                <p>สินค้าในคลังมีจำนวน: {{ pd.quantity }} {{ pd.unit }}</p>
+                            {% else %}
+                                <p><font color='red'> สินค้าหมดแล้ว พรีออร์เดอร์ กรุณาติดต่อเจ้าหน้าที่</font></p>
+                                <a href="#" class="btn btn-danger" role="button">Pre-Order</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <br><br>
+                </div>
+            {% endfor %}
+        </div>
+    </div> 
+  
+{% endblock content %}
+  

@@ -1,0 +1,66 @@
+{% extends 'myapp/base.html' %}
+{% load humanize %}
+
+{% block content %}
+{% if status == 'delete' %}
+<div class="alert alert-danger">
+    <strong>ลบสินค้าเรียบร้อยแล้ว!</strong> หากต้องการสินค้าเพิ่ม กรุณากดสั่งซื้อใหม่
+</div>
+{% endif %}
+<br>
+
+<div class="container">
+    <h2>ตะกร้าสินค้าของฉัน</h2>
+    <p>สินค้าทั้งหมดของลูกค้าที่อยู่ในตะกร้า:</p>            
+    <table class="table">
+          <thead>
+            <tr>
+              <th>เวลาสั่งซื้อล่าสุด</th>
+              <th>รหัส</th>
+              <th>สินค้า</th>
+              <th>ราคา</th>
+              <th>จำนวน</th>
+              <th>รวม</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pd in mycart %}
+                <tr>
+                <td>{{pd.stamp}}</td>
+                <td>{{pd.productid}}</td> 
+                <td>{{pd.productname}}</td>
+                <td>{{pd.price|intcomma}}</td>
+                <td>{{pd.quantity|intcomma}}</td>
+                <td>{{pd.total|intcomma}}</td>
+
+                <th>
+                <form method='POST' id="form{{pd.productid}}" onsubmit="return confirm('ยืนยันการลบใช่หรือไม่');">
+                    {% csrf_token %}
+                    <input type="hidden" name="productid" value="{{pd.productid}}">
+                    <button type="submit" form="form{{pd.productid}}" class="btn btn-danger" >ลบ</button> 
+            
+                </form>
+                </th>
+
+                </tr>
+            {% endfor %}
+            <tr>
+              <td><h5>Total</h5></td>
+                <td></td> 
+                <td></td>
+                <td></td>
+                <td><h5>{{count|intcomma}}</h5></td>
+                <td><h5>{{total|intcomma}}</h5></td>
+            </tr>
+
+          </tbody>
+        </table>
+        <a href="{% url 'mycartedit-page' %}" class="btn btn-primary">แก้ไขจำนวนสินค้า</a>
+        <div style="padding: 10px;"></div>
+        <a href="{% url 'checkout-page' %}" class="btn btn-success">Checkout</a>
+      </div>
+
+
+{% endblock content %}
+
+      

@@ -1,0 +1,92 @@
+{% extends 'myapp/base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="container">
+    <h2>รายการสั่งซื้อทั้งหมด (ADMIN)</h2>
+    <p>รายการและสถานะการสั่งซื้อ:</p>            
+    <table class="table">
+          <thead>
+            <tr>
+              <th>เวลาสั่งซื้อ</th>
+              <th>order id</th>
+              <th>ยอดรวม</th>
+              <th>ค่าส่ง</th>
+              <th>ยอดโอน</th>
+              <th>สลิป</th>
+              <th>จ่ายแล้ว</th>
+              <th>Tracking No.</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for od in allorder %}
+              <tr>
+                <td>{{od.stamp}}</td>
+                <td><a href="{% url 'updatetracking' od.orderid %}">{{od.orderid}}</a> ({{od.name}})</td>
+                <td>{{od.total|intcomma}}</td>
+                <td>{{od.shipcost|intcomma}}</td>
+                <td>{{od.total|add:od.shipcost|intcomma}}</td>
+                <td>
+
+                  {% if od.slip %}
+                      <a href="{{od.slip.url}}">ดูสลิป</a>
+                  {% else %}
+                      <i class="fa fa-window-close" style="font-size:32px;color:red;"></i>
+                  {% endif %}
+    
+                </td>
+                <td>
+
+                  {% if od.paid and od.slip %}
+                      <a href="{% url 'updatestatus' od.orderid 'cancel' %}"><i class="fa fa-check-square" style="font-size:32px;color:green;"></i></a>
+                  {% elif od.paid == False and not od.slip %}
+                      <i class="fa fa-window-close" style="font-size:32px;color:red;"></i>
+                  {% else %}
+                      <a class="btn btn-light" href="{% url 'updatestatus' od.orderid 'confirm' %}"><i class="fa fa-plus-square" style="font-size:16px;color:blue;"> ยืนยัน</i></a>
+                  {% endif %}
+
+
+                </td>
+                <td>
+                  {% if od.trackingnumber != None %}
+                      {{od.trackingnumber}}
+                  {% endif %}
+                </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+</div>
+
+<br>
+
+<ul class="pagination justify-content-center">
+
+    {% if allorder.has_previous and allorder.has_next != True %}
+        <li class="page-item"><a class="page-link" href="?page={{product.previous_page_number}}"> < </a></li>
+        <li class="page-item"><a class="page-link" href="?page={{product.number|add:-2}}">{{allorder.number|add:-2}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{product.number|add:-1}}">{{allorder.number|add:-1}}</a></li>
+        <li class="page-item active"><a class="page-link" href="?page={{product.number}}">{{allorder.number}}</a></li>
+    {% endif %}
+
+    {% if allorder.has_previous and allorder.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{product.previous_page_number}}"> < </a></li>
+        <li class="page-item"><a class="page-link" href="?page={{product.number|add:-1}}">{{allorder.number|add:-1}}</a></li>
+        <li class="page-item active"><a class="page-link" href="?page={{product.number}}">{{allorder.number}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{product.number|add:1}}">{{allorder.number|add:1}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{product.next_page_number}}"> > </a></li>
+    {% endif %}
+
+    {% if allorder.has_next and allorder.has_previous != True %}
+        <li class="page-item active"><a class="page-link" href="?page={{product.number|add:-1}}">{{allorder.number}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{product.number|add:1}}">{{allorder.number|add:1}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{product.number|add:2}}">{{allorder.number|add:2}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{product.next_page_number}}"> > </a></li>
+    {% endif %}
+
+</ul> <p style="text-align:center" > หน้า {{product.number}} จาก {{product.paginator.num_pages}} </p>
+
+{% endblock content %}
+
+      

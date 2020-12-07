@@ -1,0 +1,82 @@
+{% extends 'myapp/base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="container">
+    <h3>ข้อมูลการจัดส่ง</h3>
+    <p>
+        ORDER ID: {{order.orderid}}<br>
+        ชื่อผู้รับ: {{order.name}}<br>
+        เบอร์โทร: {{order.tel}}<br>
+        ที่อยู่จัดส่ง: {{order.address}}<br>
+        {% if order.shipping == 'ems' %}
+            รูปแบบการจัดส่ง: EMS
+        {% else %}
+            รูปแบบการจัดส่ง: ลงทะเบียน
+        {% endif %}<br>
+
+        {% if order.payment == 'transfer' %}
+            ชำระผ่าน: โอนเงินเข้าบัญชีธนาคาร
+        {% else %}
+            ชำระผ่าน: เก็บเงินปลายทาง
+        {% endif %}<br>
+        หมายเหตุ: {{other}}<br>
+    </p>
+</div>
+
+<div class="container">
+    <h2>สินค้าทั้งหมด</h2>
+    <p>รายการสินค้่าที่สั่งซื้อ:</p>            
+    <table class="table">
+          <thead>
+            <tr>
+              <th>รหัส</th>
+              <th>สินค้า</th>
+              <th style="text-align: right;">ราคา</th>
+              <th style="text-align: right;">จำนวน</th>
+              <th style="text-align: right;">รวม</th>
+            </tr>
+          </thead>
+          <tbody>
+        {% for pd in odlist %}
+            <tr>
+              <td>{{pd.productid}}</td>
+              <td>{{pd.productname}}</td>
+              <td style="text-align: right;">{{pd.price|intcomma}}</td>
+              <td style="text-align: right;">{{pd.quantity|intcomma}}</td>
+              <td style="text-align: right;">{{pd.total|intcomma}}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td><h5>Total</h5></td>
+              <td></td>
+              <td></td>
+              <td style="text-align: right;"><h5>{{count|intcomma}}</h5></td>
+              <td style="text-align: right;"><h5>{{total|intcomma}}</h5></td>
+        </tr>
+            
+
+          </tbody>
+        </table>
+        <br>
+
+        <p>ค่าส่ง: {{order.shipcost|intcomma}} บาท</p>
+        <h3>รวมยอดโอนทั้งหมด: {{total|add:order.shipcost|intcomma}} บาท</h3>
+        <h4>โอนมาที่บัญชีนี้ได้เลย</h4><br>
+        <p>
+            ธนาคารกสิกร สาขา สยามพารากอน<br>
+            เลขที่บัญชี: 9824114155<br>
+            ชื่อบัญชี: นายศุภณัฐ<br><br>
+
+
+            ธนาคารกรุงเทพ สาขา สยามพารากอน<br>
+            เลขที่บัญชี: 9774111111<br>
+            ชื่อบัญชี: นายศุภณัฐ<br>
+        </p>
+
+</div>
+
+{% endblock content %}
+
+      

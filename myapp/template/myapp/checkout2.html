@@ -1,0 +1,82 @@
+{% extends 'myapp/base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="container">
+    <h3>ข้อมูลการจัดส่ง</h3>
+    <p>
+        ชื่อผู้รับ: {{name}}<br>
+        เบอร์โทร: {{tel}}<br>
+        ที่อยู่จัดส่ง: {{address}}<br>
+        {% if shipping == 'ems' %}
+            รูปแบบการจัดส่ง: EMS
+        {% else %}
+            รูปแบบการจัดส่ง: ลงทะเบียน
+        {% endif %}<br>
+
+        {% if payment == 'transfer' %}
+            ชำระผ่าน: โอนเงินเข้าบัญชีธนาคาร
+        {% else %}
+            ชำระผ่าน: เก็บเงินปลายทาง
+        {% endif %}<br>
+        หมายเหตุ: {{other}}<br>
+    </p>
+</div>
+
+<div class="container">
+    <h2>สินค้าทั้งหมด</h2>
+    <p>รายการสินค้่าที่สั่งซื้อ:</p>            
+    <table class="table">
+          <thead>
+            <tr>
+              <th>เวลาสั่งซื้อล่าสุด</th>
+              <th>รหัส</th>
+              <th>สินค้า</th>
+              <th style="text-align: right;">ราคา</th>
+              <th style="text-align: right;">จำนวน</th>
+              <th style="text-align: right;">รวม</th>
+            </tr>
+          </thead>
+          <tbody>
+        {% for pd in mycart %}
+            <tr>
+              <td>{{pd.stamp}}</td>
+              <td>{{pd.productid}}</td>
+              <td>{{pd.productname}}</td>
+              <td style="text-align: right;">{{pd.price|intcomma}}</td>
+              <td style="text-align: right;">{{pd.quantity|intcomma}}</td>
+              <td style="text-align: right;">{{pd.total|intcomma}}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td><h5>Total</h5></td>
+              <td></td> 
+              <td></td>
+              <td></td>
+              <td style="text-align: right;"><h5>{{count|intcomma}}</h5></td>
+              <td style="text-align: right;"><h5>{{total|intcomma}}</h5></td>
+        </tr>
+            
+
+          </tbody>
+        </table>
+</div>
+
+<form method="POST">
+    {% csrf_token %}
+
+<input type="hidden" id="name" name="name" value="{{name}}">
+<input type="hidden" id="tel" name="tel" value="{{tel}}">
+<input type="hidden" id="address" name="address" value="{{address}}">
+<input type="hidden" id="shipping" name="shipping" value="{{shipping}}">
+<input type="hidden" id="payment" name="payment" value="{{payment}}">
+<input type="hidden" id="other" name="other" value="{{other}}">
+<input type="hidden" id="page" name="page" value="confirm">
+
+<button type="submit" class="btn btn-primary">ยืนยัน</button>
+</form>
+
+{% endblock content %}
+
+      
