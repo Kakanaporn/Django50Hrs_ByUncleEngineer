@@ -1,0 +1,21 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+	<h3>ยืนยันการสมัคร</h3>
+
+	{% if status == 'found' %}
+			<div class="alert alert-success alert-dismissible">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>ยืนยันสำเร็จ</strong>คุณได้ยืนยันสมัครสามารถชิกเรียบร้อยแล้ว!
+			</div>
+	{% else %}
+			<div class="alert alert-warning alert-dismissible">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>ไม่สามารถยืนยันได้!</strong>กรุณาตรวจสอบอีเมลล์อีกครั้ง <<ขอรหัสอีกครั้ง>>
+			</div>
+	{% endif %}
+				
+{% endblock content %}
+	
+
+

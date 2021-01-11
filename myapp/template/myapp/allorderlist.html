@@ -61,31 +61,31 @@
 
 <br>
 
-<ul class="pagination justify-content-center">
+<ul class="pagination">
 
     {% if allorder.has_previous and allorder.has_next != True %}
-        <li class="page-item"><a class="page-link" href="?page={{product.previous_page_number}}"> < </a></li>
-        <li class="page-item"><a class="page-link" href="?page={{product.number|add:-2}}">{{allorder.number|add:-2}}</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{product.number|add:-1}}">{{allorder.number|add:-1}}</a></li>
-        <li class="page-item active"><a class="page-link" href="?page={{product.number}}">{{allorder.number}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.previous_page_number}}"> < </a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.number|add:-2}}">{{allorder.number|add:-2}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.number|add:-1}}">{{allorder.number|add:-1}}</a></li>
+        <li class="page-item active"><a class="page-link" href="?page={{allorder.number}}">{{allorder.number}}</a></li>
     {% endif %}
 
     {% if allorder.has_previous and allorder.has_next %}
-        <li class="page-item"><a class="page-link" href="?page={{product.previous_page_number}}"> < </a></li>
-        <li class="page-item"><a class="page-link" href="?page={{product.number|add:-1}}">{{allorder.number|add:-1}}</a></li>
-        <li class="page-item active"><a class="page-link" href="?page={{product.number}}">{{allorder.number}}</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{product.number|add:1}}">{{allorder.number|add:1}}</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{product.next_page_number}}"> > </a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.previous_page_number}}"> < </a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.number|add:-1}}">{{allorder.number|add:-1}}</a></li>
+        <li class="page-item active"><a class="page-link" href="?page={{allorder.number}}">{{allorder.number}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.number|add:1}}">{{allorder.number|add:1}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.next_page_number}}"> > </a></li>
     {% endif %}
 
     {% if allorder.has_next and allorder.has_previous != True %}
-        <li class="page-item active"><a class="page-link" href="?page={{product.number|add:-1}}">{{allorder.number}}</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{product.number|add:1}}">{{allorder.number|add:1}}</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{product.number|add:2}}">{{allorder.number|add:2}}</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{product.next_page_number}}"> > </a></li>
+        <li class="page-item active"><a class="page-link" href="?page={{allorder.number|add:-1}}">{{allorder.number}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.number|add:1}}">{{allorder.number|add:1}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.number|add:2}}">{{allorder.number|add:2}}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{allorder.next_page_number}}"> > </a></li>
     {% endif %}
 
-</ul> <p style="text-align:center" > หน้า {{product.number}} จาก {{product.paginator.num_pages}} </p>
+</ul> <p> หน้า {{allorder.number}} จาก {{allorder.paginator.num_pages}} </p>
 
 {% endblock content %}
 

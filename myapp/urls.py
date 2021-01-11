@@ -22,5 +22,7 @@ urlpatterns = [
     path('uploadslip/<str:orderid>/',UploadSlip, name='uploadslip-page'),
     path('updatestatus/<str:orderid>/<str:status>/',UpdatePaid, name='updatestatus'),
     path('updatetracking/<str:orderid>/',UpdateTracking, name='updatetracking'),
-    path('myorder/<str:orderid>/',MyOrder, name='myorder-page')
+    path('myorder/<str:orderid>/',MyOrder, name='myorder-page'),
+    path('confirm/<str:token>/',Confirm, name='confirm-email'),
+    path('category/<int:code>/',ProductsCategory, name='category-page')
 ]

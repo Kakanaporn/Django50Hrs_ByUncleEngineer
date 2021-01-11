@@ -1,13 +1,13 @@
 {% extends 'myapp/base.html' %}
 
 {% block content %}
-    <h3>สินค้าทั้งหมดในร้าน</h3>
+    <h3>สินค้าหมวด "{{catname}}" ทั้งหมดในร้าน</h3>
     <p>เรามีสินค้าให้เลือกชมมากมาย</p>
     <div class="container-fluid">
         <div class="row">
             {% for pd in product %}
                 <div class="col-sm-4">
-                    <div class="card" style="width:300px; height: 550px;">
+                    <div class="card" style="width:300px; height: 600px;">
 
                         {% if pd.image %}
                             <img class="card-img-top" src="{{ pd.image.url }}" width="300" style="width: 300px; height: 200px; overflow: hidden;">
@@ -20,7 +20,7 @@
                         <div class="card-body">
                             <h1 class="card-title">{{ pd.name }}</h1>
                             <p>ราคา {{ pd.price }} บาท/{{ pd.unit }}</p>
-                            <p>{{ pd.detail|linebreaks|truncatechars_html:100}}</p>
+                            <p>{{ pd.detail|linebreaks|truncatechars_html:50}}</p>
                             
                             {% if pd.quantity > 0 %}
                                 <p>สินค้าในคลังมีจำนวน: {{ pd.quantity }} {{ pd.unit }}</p>

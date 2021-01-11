@@ -8,6 +8,85 @@ from django.http import HttpResponse #HttpResponse is a fucntion to show content
 from .models import *
 from datetime import datetime
 
+########Line Notify########
+from songline import Sendline
+token ='ZDXWM1wd3IhrbZjeq882GXgIBk8OnRk8qFDklLPXn7c'
+messenger = Sendline(token)
+
+######Generate token#########
+import random
+import string
+def GenerateToken(domain='http://localhost:8000/confirm/'):
+	allchar = [ i for i in list(string.ascii_letters)] #Generate ascii to list
+	allchar.extend([str(i) for i in range(10)])# extending number 0-9 in the list
+	emailtoken = ''
+	for i in range(40):
+		emailtoken += random.choice(allchar)
+
+	url = domain + emailtoken
+	#print(url)
+	return (url,emailtoken)
+
+def Confirm(request,token):
+	try:
+		check = VerifyEmail.objects.get(token=token)
+		status = 'found'
+		check.approved = True
+		check.save()
+		context = {'status':status,'username':check.user.username,'name':check.user.first_name}
+	except:
+		status = 'notfound'
+		context = {'status':status}
+	
+	return render(request, 'myapp/confirm.html',context)
+
+#######EMAIL########
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+def sendthai(sendto,subj="ทดสอบส่งเมลลล์",detail="สวัสดี!\nคุณสบายดีไหม?\n"):
+
+	myemail = 'noreply.teamtesting@gmail.com'
+	mypassword = "gsHofh;p96"
+	receiver = sendto
+
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = subj
+	msg['From'] = 'Team Best Fruit'
+	msg['To'] = receiver
+	text = detail
+
+	part1 = MIMEText(text, 'plain')
+	msg.attach(part1)
+
+	s = smtplib.SMTP('smtp.gmail.com:587')
+	s.ehlo()
+	s.starttls()
+
+	s.login(myemail, mypassword)
+	s.sendmail(myemail, receiver.split(','), msg.as_string())
+	s.quit()
+
+
+###########Start sending#############
+def EmailConfirm(email,name,token):
+	subject = 'ยืนยันการสมัครเว็บไซต์ Best Fruit'
+	newmember_name = name
+	content = '''
+	ขอบคุณที่ท่านทำการสัมครสามาชิก Best Fruit! ปลอดภัยของการเข้าใช้
+	กรุณายืนยันอีเมลล์ ผ่านลิ้งค์ด้านล่างนี้:
+	ขอให้สนุกกับการเลือกสินค้า และถ้าต้องการติดต่อ เสนอแนะเราท่านสามารถติต่อเราได้ทันที.
+	'''
+
+	#link = 'http://best-fruit.com/confirm/fawtkataktaktkawkejtjka'
+	link = token
+
+	msg = 'สวัสดีครับ คุณ{} \n\n {}\n Verify Link: {}'.format(newmember_name,content,link)
+	sendthai(email,subject,msg)
+###############
+
+
 # Create your views here.
 def Home(request):
 	product = Allproduct.objects.all().order_by('id').reverse()[:3] #query data form all products by descending order
@@ -37,7 +116,7 @@ def Addproduct(request):
 		return redirect('home-page')
 
 
-	if request.method == 'POST'and request.FILES['imageupload']:
+	if request.method == 'POST':
 		data = request.POST.copy()
 		name = data.get('name')
 		price = data.get('price')
@@ -54,15 +133,18 @@ def Addproduct(request):
 		new.imageurl = imageurl
 		new.quantity = quantity
 		new.unit = unit
-		###############################
-		file_image = request.FILES['imageupload']
-		file_image_name = request.FILES['imageupload'].name.replace(' ','')
-		print('FILE_IMAGE:', file_image)
-		print('IMAGE_NAME:', file_image_name)
-		fs = FileSystemStorage()
-		filename = fs.save(file_image_name,file_image)
-		upload_file_url = fs.url(filename)
-		new.image = upload_file_url[6:]
+		############Save Image################
+		try:
+			file_image = request.FILES['imageupload']
+			file_image_name = request.FILES['imageupload'].name.replace(' ','')
+			print('FILE_IMAGE:', file_image)
+			print('IMAGE_NAME:', file_image_name)
+			fs = FileSystemStorage()
+			filename = fs.save(file_image_name,file_image)
+			upload_file_url = fs.url(filename)
+			new.image = upload_file_url[6:]
+		except:
+			new.image = '/default-product.jpg'
 		###############################
 		new.save()
 
@@ -72,11 +154,20 @@ from django.core.paginator import Paginator
 
 def Products(request):
 	product = Allproduct.objects.all().order_by('id').reverse() #query data from all products by descending order
-	paginator = Paginator(product,2) #1 หน้าโชว์ 3 ชิ้นเท่านั้น
+	paginator = Paginator(product,3) #1 หน้าโชว์ 3 ชิ้นเท่านั้น
 	page = request.GET.get('page') # http://localhost:8000/allproduct/?page=2
 	product = paginator.get_page(page)
 	context = {'product':product}
 	return render(request, 'myapp/allproduct.html', context)
+
+def ProductsCategory(request,code):
+	select = Category.objects.get(id=code)
+	product = Allproduct.objects.filter(catname=select).order_by('id').reverse() #query data from all products by descending order
+	paginator = Paginator(product,3) #1 หน้าโชว์ 3 ชิ้นเท่านั้น
+	page = request.GET.get('page') # http://localhost:8000/allproduct/?page=2
+	product = paginator.get_page(page)
+	context = {'product':product,'catname':select.catname}
+	return render(request, 'myapp/allproductcat.html', context)
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
@@ -103,6 +194,15 @@ def Register(request):
 		profile = Profile()
 		profile.user = User.objects.get(username=email)
 		profile.save()
+
+		##### send email for verify #### **** <<<testing>>>
+		token,token_code = GenerateToken()
+		EmailConfirm(email,first_name,token)
+		getuser = User.objects.get(username=email)
+		addverify = VerifyEmail()
+		addverify.user = getuser
+		addverify.token = token_code
+		addverify.save()
 
 		#from django.contrib.auth import authenticate, login
 		user = authenticate(username=email, password=password)
@@ -275,6 +375,8 @@ def Checkout(request):
 			mid = str(user.id).zfill(4)
 			dt = datetime.now().strftime('%Y%m%d%H%M%S')
 			orderid = 'OD'+ mid + dt
+			productorder = ''
+			producttotal = 0
 
 			for pd in mycart:    
 				order = OrderList()
@@ -285,7 +387,19 @@ def Checkout(request):
 				order.quantity = pd.quantity
 				order.total = pd.total
 				order.save()
+				productorder = productorder + '- {}\n'.format(pd.productname)#รายการสินค้า
+				producttotal += pd.total
+
 			
+			# Send to LINE Notify in Group
+			texttoline = 'ODID: {}\n---\n{}ยอดรวม: {:,.2f} บาท\n ({})'.format(orderid,productorder,producttotal,name)
+			# เช็คยอดสินค้าว่ามากกว่า 10000 หรือไม่หากจริงจะส่งสติกเกอร์ไปด้วย
+			if producttotal > 10000:
+				messenger.sticker(14,1,texttoline)
+			else:
+				messenger.sendtext(texttoline)
+
+
 			# save product in cart to OrderProduct models
 			# creat order pending
 			odp = OrderPending()
